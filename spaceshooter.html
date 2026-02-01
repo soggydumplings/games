@@ -249,11 +249,11 @@ function drawStars(){
 
 /* ================= Enemies ================= */
 let enemies = [];
-let enemyBaseSpeed = 0.5;
-let enemyBulletSpeed = 3;
-let enemyShootChance = 0.001;
+let enemyBaseSpeed = 0.3;
+let enemyBulletSpeed = 2; 
+let enemyShootChance = 0.00005;
 const maxEnemySpeed = 3;
-const maxShootChance = 0.07;
+const maxShootChance = 0.01;
 
 function spawnWave(){
   enemies = [];
@@ -671,15 +671,16 @@ function spawnPlayer(){
 function isWaveCleared(){
   return enemies.every(e=>!e.alive);
 }
-
-function increaseDifficulty(){
+function increaseDifficulty() {
   wave++;
-  enemyBaseSpeed = Math.min(enemyBaseSpeed + 0.03, maxEnemySpeed);
-  enemyBulletSpeed = Math.max(enemyBulletSpeed - 0.05, 2);
-  enemyShootChance = Math.min(enemyShootChance + 0.0005, maxShootChance);
+
+  // Smooth difficulty curve
+  enemyBaseSpeed = Math.min(0.3 + Math.pow(wave, 0.25) * 0.02, maxEnemySpeed);
+  enemyBulletSpeed = Math.min(2 + Math.pow(wave, 0.25) * 0.05, 3); // faster bullets gradually
+  enemyShootChance = Math.min(0.00005 + Math.pow(wave, 0.3) * 0.00002, maxShootChance); // extremely slow growth
+
   spawnWave();
 }
-
 /* ================= Game Loop ================= */
 function update(){
   if(gameOver) return;
