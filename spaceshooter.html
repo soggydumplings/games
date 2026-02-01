@@ -257,7 +257,7 @@ const maxShootChance = 0.01;
 
 function spawnWave(){
   enemies = [];
-  const rows = Math.min(2 + Math.floor(wave/2), 10);
+  const rows = Math.min(2 + Math.floor(wave/2), 5);
   const cols = Math.min(5 + wave, 10);
   const spacingX = canvas.width / (cols + 1);
   const spacingY = 50;
@@ -674,13 +674,13 @@ function isWaveCleared(){
 function increaseDifficulty() {
   wave++;
 
-  // Smooth difficulty curve
-  enemyBaseSpeed = Math.min(0.8 + Math.pow(wave, 0.25) * 0.2, maxEnemySpeed);
-  enemyBulletSpeed = Math.min(2 + Math.pow(wave, 0.25) * 0.02, 3);
-  enemyShootChance = Math.min(0.0001 + Math.pow(wave, 0.3) * 0.0001, maxShootChance); // extremely slow growth
+  enemyBaseSpeed = Math.min(0.5 + (wave * 0.4), maxEnemySpeed); 
+  enemyBulletSpeed = Math.min(2 + (wave * 0.5), 6); 
+  enemyShootChance = Math.min(0.001 + (wave * 0.002), maxShootChance);
 
   spawnWave();
 }
+
 /* ================= Game Loop ================= */
 function update(){
   if(gameOver) return;
