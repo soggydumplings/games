@@ -471,22 +471,22 @@ function drawShip() {
 
   // 0=Empty, 1=White/Grey, 2=Red, 3=Blue
   const galagaMap = [
-    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], // Row 0
-    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], // Row 1
-    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], // Row 2
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], 
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], 
+    [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
  
-[0,0,0,0,0,0,1,1,1,0,0,0,0,0,0], // Row 3
-    [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0], // Row 4
-    [0,0,0,2,0,0,1,1,1,0,0,2,0,0,0], // Row 5
-    [0,0,0,2,0,1,1,1,1,1,0,2,0,0,0], // Row 6
-    [2,0,0,1,3,1,1,2,1,1,3,1,0,0,2], // Row 7
-    [2,0,0,3,1,1,2,2,2,1,1,3,0,0,2], // Row 8
-    [1,0,0,1,1,1,2,1,2,1,1,1,0,0,1], // Row 9
-    [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1], // Row 10
-    [1,1,1,1,1,2,1,1,1,2,1,1,1,1,1], // Row 11
-    [1,1,1,0,2,2,1,1,1,2,2,0,1,1,1], // Row 12 
-    [1,1,0,0,2,2,0,1,0,2,2,0,0,1,1], // Row 13
-    [1,0,0,0,0,0,0,1,0,0,0,0,0,0,1], // Row 14
+[0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+    [0,0,0,2,0,0,1,1,1,0,0,2,0,0,0],
+    [0,0,0,2,0,1,1,1,1,1,0,2,0,0,0], 
+    [2,0,0,1,3,1,1,2,1,1,3,1,0,0,2], 
+    [2,0,0,3,1,1,2,2,2,1,1,3,0,0,2], 
+    [1,0,0,1,1,1,2,1,2,1,1,1,0,0,1], 
+    [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1], 
+    [1,1,1,1,1,2,1,1,1,2,1,1,1,1,1], 
+    [1,1,1,0,2,2,1,1,1,2,2,0,1,1,1], 
+    [1,1,0,0,2,2,0,1,0,2,2,0,0,1,1], 
+    [1,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
   ];
 
   const startX = x - (35 / 2); 
@@ -511,10 +511,8 @@ function drawShip() {
 
     ctx.save();
     
-    // This makes the shield "glow" and blend with the ship pixels
     ctx.globalCompositeOperation = "screen"; 
 
-    // Multi-layer Gradient
     let grad = ctx.createRadialGradient(x, y, 5, x, y, radius);
     grad.addColorStop(0, "rgba(0, 255, 255, 0.1)");   // Very faint cyan over the ship
     grad.addColorStop(0.6, "rgba(0, 150, 255, 0.2)"); // Mid-depth blue
@@ -526,7 +524,6 @@ function drawShip() {
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
 
-    // The "Hard Edge" of the bubble
     ctx.strokeStyle = "rgba(200, 255, 255, 0.5)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -567,7 +564,6 @@ function drawBullets() {
     ctx.lineTo(b.x + 3, b.y + 7);   // Base right
     ctx.fill();
 
-    // Main Body (Narrowed to 4px wide)
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(b.x - 1, b.y + 7, 4, 12);
 
@@ -577,7 +573,7 @@ function drawBullets() {
     ctx.fillRect(b.x + 3, b.y + 14, 2, 5); // Right fin
 
     // Movement
-    b.y -= 8; // Slightly faster for a "sleek" feel
+    b.y -= 8; 
     if (b.y < -40) {
       bullets.splice(i, 1);
     }
@@ -920,7 +916,7 @@ function checkHits(){
 }
 
 function checkEnemyHits() {
- 
+  
   const shipHitbox = {
     left: ship.x - 17,
     right: ship.x + 17,
@@ -930,7 +926,6 @@ function checkEnemyHits() {
 
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     const b = enemyBullets[i];
-    
     const bulletFront = b.y + 12;
     const bulletBack = b.y;
 
@@ -941,21 +936,38 @@ function checkEnemyHits() {
       bulletFront >= shipHitbox.top && 
       bulletBack <= shipHitbox.bottom
     ) {
-      // HIT DETECTED
       enemyBullets.splice(i, 1);
-      lives--;
-      spawnExplosion(ship.x, ship.y, true);
-
-      if (lives <= 0) {
-        gameOver = true;
-        alert("GAME OVER\nScore: " + score);
-      } else {
-        // Give the player a new shield upon respawning
-        ship.shield = true;
-        setTimeout(() => { ship.shield = false; }, 3000);
-        spawnPlayer();
-      }
+      processPlayerDeath();
+      return;
     }
+  }
+
+  // CHECK ENEMY BALLOONS HITTING PLAYER
+  enemies.forEach(e => {
+    if (!e.alive) return;
+
+    const dist = Math.hypot(ship.x - e.x, ship.y - e.y);
+    
+    if (!ship.shield && dist < 35) {
+      e.alive = false;
+      spawnExplosion(e.x, e.y); 
+      processPlayerDeath();
+    }
+  });
+}
+
+function processPlayerDeath() {
+  lives--;
+  spawnExplosion(ship.x, ship.y, true);
+
+  if (lives <= 0) {
+    gameOver = true;
+    setTimeout(() => {
+      alert("GAME OVER\nScore: " + score);
+      location.reload(); 
+    }, 100);
+  } else {
+    spawnPlayer(); 
   }
 }
 
