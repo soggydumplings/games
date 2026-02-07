@@ -802,42 +802,62 @@ function drawHeart(x, y, size) {
   ctx.fillRect(x + size, y + size * 3, size * 3, size);
   ctx.fillRect(x + size * 2, y + size * 4, size, size);
 }
+
 function drawEnemyBullets() {
+  const T = null;
+  const R = "#ff2a00";
+  const O = "#ff5a00";
+  const Y = "#ffb300";
+  const L = "#ffcc33";
+  const W = "#ffe066";
+
+  const sprite = [
+    [T,T,T,R,T,T,T],
+    [T,T,R,T,T,T,T],
+    [T,R,R,T,T,T,T],
+    [T,R,R,T,T,T,T],
+    [T,R,R,T,R,T,T],
+    [T,R,R,T,T,R,T],
+    [T,R,R,T,R,R,T],
+    [T,R,Y,R,R,R,T],
+    [T,R,Y,R,Y,R,T],
+    [T,R,Y,Y,Y,R,T],
+    [R,R,Y,L,Y,R,T],
+    [R,Y,L,W,Y,R,R],
+    [R,Y,W,W,L,Y,R],
+    [R,Y,W,W,W,Y,R],
+    [R,Y,Y,W,Y,Y,R],
+    [T,R,Y,Y,Y,R,T],
+    [T,T,R,R,R,T,T],
+  ];
+
+  const px = 1;
+
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     const b = enemyBullets[i];
-    const time = Date.now() * 0.01; 
-    
-    // --- CENTERED BURNING EFFECT ---
-    for (let j = 0; j < 3; j++) {
-      // Use a smaller flicker so it doesn't look like it's "detaching"
-      const flickerX = Math.sin(time + j) * 2; 
-      const flickerY = Math.random() * 15 + 10;
-      
-      ctx.fillStyle = j === 0 ? "rgba(255, 100, 0, 0.3)" : "rgba(255, 200, 0, 0.2)";
-      ctx.beginPath();
-      
-      // Start slightly left of center
-      ctx.moveTo(b.x - 3, b.y); 
-      
-      // Curve to a point directly above the center (b.x) + flicker
-      ctx.quadraticCurveTo(
-        b.x + flickerX, b.y - flickerY, 
-        b.x + 3, b.y // End slightly right of center
-      );
-      ctx.fill();
+
+    const x0 = b.x | 0;
+    const y0 = b.y | 0;
+
+    for (let y = 0; y < sprite.length; y++) {
+      for (let x = 0; x < sprite[y].length; x++) {
+        const c = sprite[y][x];
+        if (c === T) continue;
+
+        ctx.fillStyle = c;
+        ctx.fillRect(
+          x0 + x * px,
+          y0 + y * px,
+          px,
+          px
+        );
+      }
     }
 
-    // --- CENTERED BULLET BODY ---
-    let grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + 12);
-    grad.addColorStop(0, "#ffcc00"); 
-    grad.addColorStop(1, "#ff0000");
-
-    ctx.fillStyle = grad;
-    // (b.x - 2.5) centers the 5px wide rectangle perfectly
-    ctx.fillRect(b.x - 2.5, b.y, 5, 12);
-
     b.y += b.speed;
-    if (b.y > canvas.height + 20) enemyBullets.splice(i, 1);
+    if (b.y > canvas.height + 30) {
+      enemyBullets.splice(i, 1);
+    }
   }
 }
 
